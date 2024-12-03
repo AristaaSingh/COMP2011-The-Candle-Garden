@@ -1,0 +1,79 @@
+/* General Styling */
+body {
+    margin: 0;
+    font-family: "Cormorant Garamond", serif;
+}
+
+/* Header and Navbar Styling */
+.header-with-navbar {
+    background-color: #fdf6f0;
+    border-bottom: 2px solid #d4a373;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+/* Store Logo */
+.store-logo {
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 700;
+    color: #5a5a5a;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 3rem;
+    margin: 0;
+    text-align: center;
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: transparent;
+    font-family: "Cormorant Garamond", serif;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    color: #5a5a5a;
+    font-size: 1.2rem;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-item .bx:hover {
+    color: #d4a373;
+}
+
+.navbar-toggler {
+    border: none;
+}
+
+.navbar-toggler-icon {
+    background-color: #5a5a5a;
+}
+
+/* increasing icon size on navbar since they are too small compared to the text */
+.navbar-nav .nav-item .bx {
+    font-size: 1.8rem;
+}
+
+/* Dropdown Menu Styling */
+.dropdown-menu .dropdown-item {
+    font-weight: 500; /* Matches cormorant-garamond-medium */
+    color: #5a5a5a;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    color: #d4a373;
+    background-color: transparent; /* Maintain transparent background */
+}
+
+/* Footer Styling */
+footer {
+    background-color: #fdf6f0; /* Same beige as navbar */
+    font-family: "Cormorant Garamond", serif; /* Match font */
+    color: #5a5a5a; /* Neutral text color */
+    border-top: 2px solid #d4a373; /* Optional: Add a subtle border */
+    text-align: center; /* Center the footer text */
+    padding: 1rem 0; /* Add spacing for readability */
+}
+
+footer p {
+    margin: 0; /* Remove extra margin around text */
+}
