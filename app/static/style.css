@@ -2,6 +2,7 @@
 body {
     margin: 0;
     font-family: "Cormorant Garamond", serif;
+    background-color: #fff;
 }
 
 /* Header and Navbar Styling */
@@ -25,7 +26,7 @@ body {
 
 /* Navbar Styling */
 .navbar {
-    background-color: transparent;
+    background-color: #fdf6f0;
     font-family: "Cormorant Garamond", serif;
 }
 
