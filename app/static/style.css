@@ -5,6 +5,15 @@ body {
     background-color: #fff;
 }
 
+
+/* Header and Navbar Styling */
+.header-with-navbar {
+    background-color: #fdf6f0;
+    border-bottom: 2px solid #d4a373;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
 /* Store Logo */
 .store-logo {
     font-family: "Cormorant Garamond", serif;
@@ -16,15 +25,6 @@ body {
     text-align: center;
 }
 
-/* Header and Navbar Styling */
-.header-with-navbar {
-    background-color: #fdf6f0;
-    border-bottom: 2px solid #d4a373;
-    padding-bottom: 0;
-    margin-bottom: 0;
-}
-
-/* Navbar Styling */
 .navbar {
     background-color: #fdf6f0;
     font-family: "Cormorant Garamond", serif;
@@ -49,25 +49,25 @@ body {
     background-color: #5a5a5a;
 }
 
-/* increasing icon size on navbar since they are too small compared to the text */
+
 .navbar-nav .nav-item .bx {
-    font-size: 1.8rem;
+    font-size: 1.8rem; /* increasing icon size on navbar since they are too small compared to the text */
 }
 
-/* Dropdown Menu Styling */
 .dropdown-menu .dropdown-item {
-    font-weight: 500; /* Matches cormorant-garamond-medium */
+    font-weight: 500; 
     color: #5a5a5a;
 }
 
 .dropdown-menu .dropdown-item:hover {
     color: #d4a373;
-    background-color: transparent; /* Maintain transparent background */
+    background-color: transparent;
 }
+
 
 /* Footer Styling */
 footer {
-    background-color: #fdf6f0; /* Same beige as navbar */
+    background-color: #fdf6f0;
     font-family: "Cormorant Garamond", serif; /* Match font */
     color: #5a5a5a; /* Neutral text color */
     border-top: 2px solid #d4a373; /* Optional: Add a subtle border */
@@ -78,6 +78,7 @@ footer {
 footer p {
     margin: 0; /* Remove extra margin around text */
 }
+
 
 /* Card Styling */
 .card {
@@ -102,7 +103,6 @@ footer p {
     color: #5a5a5a; /* Match text color with theme */
 }
 
-/* Circular Button Styling */
 .btn-cart {
     background-color: #f4a261; /* Custom color for the button */
     color: #fff; /* Icon color */
@@ -123,7 +123,8 @@ footer p {
     color: #ffffff; /* Ensure icon color remains visible */
 }
 
-/* Styling for the introductory text */
+
+/* text and general */
 p {
     font-family: "Cormorant Garamond", serif;
     font-weight: 400; /* Use cormorant-garamond-regular for the paragraph */
@@ -131,3 +132,55 @@ p {
     font-size: 1.2rem; /* Slightly larger paragraph text for readability */
     margin-bottom: 1.5rem; /* Add spacing below the paragraph */
 }
+
+.text-center {
+    font-family: "Cormorant Garamond", serif;
+    color: #5a5a5a;
+}
+
+.my-btn {
+    font-family: "Cormorant Garamond", serif;
+    background-color: #d4a373; /* Match site theme */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.my-btn:hover {
+    background-color: #a65e2e; /* Slightly darker hover effect */
+}
+
+
+/* Form Styling */
+form {
+    font-family: "Cormorant Garamond", serif; /* Ensure consistent font */
+    font-size: 1.1rem; /* Slightly larger text for better readability */
+    color: #5a5a5a; /* Neutral color for text */
+}
+
+/* Form Labels */
+form .form-label {
+    font-weight: 600; /* Medium weight for labels */
+    color: #5a5a5a;
+}
+
+/* Form Inputs */
+form .form-control {
+    border: 1px solid #d4a373; /* Match with site theme */
+    border-radius: 5px; /* Add subtle rounding */
+    padding: 10px;
+}
+
+form .form-control:focus {
+    border-color: #d4a373;
+    box-shadow: 0 0 5px rgba(212, 163, 115, 0.5); /* Subtle focus glow */
+}
+
+.text-danger {
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
