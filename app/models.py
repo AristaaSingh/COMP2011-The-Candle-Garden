@@ -9,6 +9,21 @@ candle_category = db.Table(
     db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True)
 )
 
+# Association Table for Many-to-Many Relationship between Basket and Candle
+basket_candle = db.Table(
+    'basket_candle',
+    db.Column('basket_id', db.Integer, db.ForeignKey('basket.id'), primary_key=True),
+    db.Column('candle_id', db.Integer, db.ForeignKey('candle.id'), primary_key=True)
+)
+
+# Association Table for Many-to-Many Relationship between Order and Candle
+order_candle = db.Table(
+    'order_candle',
+    db.Column('order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True),
+    db.Column('candle_id', db.Integer, db.ForeignKey('candle.id'), primary_key=True)
+)
+
+
 class Candle(db.Model):
     """Model for Candles"""
     id = db.Column(db.Integer, primary_key=True)
@@ -16,10 +31,12 @@ class Candle(db.Model):
     description = db.Column(db.Text, nullable=True)
     price = db.Column(db.Float, nullable=False)
     stock = db.Column(db.Integer, nullable=False, default=0)
+    image_filename = db.Column(db.String(255), nullable=True)
     categories = db.relationship('Category', secondary=candle_category, back_populates='candles')
 
     def __repr__(self):
         return f"<Candle {self.name}>"
+
 
 class Category(db.Model):
     """Model for Categories"""
@@ -30,6 +47,7 @@ class Category(db.Model):
     def __repr__(self):
         return f"<Category {self.name}>"
 
+
 class User(UserMixin, db.Model):
     """Model for Users"""
     id = db.Column(db.Integer, primary_key=True)
@@ -37,6 +55,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
     orders = db.relationship('Order', back_populates='user')
+    basket = db.relationship('Basket', uselist=False, back_populates='user')  # One-to-One relationship with Basket
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -47,6 +66,18 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return f"<User {self.username}>"
 
+
+class Basket(db.Model):
+    """Model for User's Basket"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', back_populates='basket')
+    candles = db.relationship('Candle', secondary=basket_candle, back_populates='baskets')  # Many-to-Many relationship with Candle
+
+    def __repr__(self):
+        return f"<Basket {self.id} - User {self.user.username}>"
+
+
 class Order(db.Model):
     """Model for Orders"""
     id = db.Column(db.Integer, primary_key=True)
@@ -54,14 +85,7 @@ class Order(db.Model):
     order_date = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     total_price = db.Column(db.Float, nullable=False, default=0.0)
     user = db.relationship('User', back_populates='orders')
-    candles = db.relationship('Candle', secondary='order_candle', back_populates='orders')
+    candles = db.relationship('Candle', secondary=order_candle, back_populates='orders')
 
     def __repr__(self):
         return f"<Order {self.id} - User {self.user.username}>"
-
-# Association Table for Many-to-Many Relationship between Order and Candle
-order_candle = db.Table(
-    'order_candle',
-    db.Column('order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True),
-    db.Column('candle_id', db.Integer, db.ForeignKey('candle.id'), primary_key=True)
-)
