@@ -78,3 +78,56 @@ footer {
 footer p {
     margin: 0; /* Remove extra margin around text */
 }
+
+/* Card Styling */
+.card {
+    font-family: "Cormorant Garamond", serif; /* Apply the same font */
+    font-weight: 400; /* Regular weight for readability */
+    max-width: 300px; /* Set a maximum width for the cards */
+    margin: auto; /* Center align the cards within the column */
+}
+
+.card-img-top {
+    height: 200px; /* Set a specific height for uniformity */
+    object-fit: cover; /* Crop images to fit the defined height */
+}
+
+.card-title {
+    font-size: 1.5rem; /* Adjust title size */
+    color: #5a5a5a; /* Match text color with theme */
+}
+
+.card-text {
+    font-size: 1.2rem; /* Adjust text size */
+    color: #5a5a5a; /* Match text color with theme */
+}
+
+/* Circular Button Styling */
+.btn-cart {
+    background-color: #f4a261; /* Custom color for the button */
+    color: #fff; /* Icon color */
+    border: none; /* Remove border */
+    border-radius: 50%; /* Make the button circular */
+    width: 40px; /* Set width to create a circle */
+    height: 40px; /* Set height to create a circle */
+    display: flex; /* Center icon inside the button */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    font-size: 1.5rem; /* Size of the icon */
+    transition: background-color 0.3s ease; /* Smooth hover transition */
+    text-decoration: none;
+}
+
+.btn-cart:hover {
+    background-color: #e76f51; /* Darker shade for hover effect */
+    color: #ffffff; /* Ensure icon color remains visible */
+}
+
+/* Styling for the introductory text */
+p {
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 400; /* Use cormorant-garamond-regular for the paragraph */
+    color: #5a5a5a;
+    font-size: 1.2rem; /* Slightly larger paragraph text for readability */
+    margin-bottom: 1.5rem; /* Add spacing below the paragraph */
+}

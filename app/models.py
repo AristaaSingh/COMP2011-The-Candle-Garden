@@ -33,6 +33,8 @@ class Candle(db.Model):
     stock = db.Column(db.Integer, nullable=False, default=0)
     image_filename = db.Column(db.String(255), nullable=True)
     categories = db.relationship('Category', secondary=candle_category, back_populates='candles')
+    baskets = db.relationship('Basket', secondary=basket_candle, back_populates='candles')
+    orders = db.relationship('Order', secondary=order_candle, back_populates='candles')
 
     def __repr__(self):
         return f"<Candle {self.name}>"

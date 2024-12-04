@@ -8,6 +8,6 @@ admin.add_view(ModelView(Category, db.session))
 
 @app.route('/')
 def home():
-    # Render the base template
-    return render_template('base.html')
+    candles = Candle.query.all()
+    return render_template('home.html', candles=candles)
     
