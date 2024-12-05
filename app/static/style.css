@@ -5,6 +5,30 @@ body {
     background-color: #fff;
 }
 
+p, .text-center, form {
+    font-family: "Cormorant Garamond", serif;
+    color: #5a5a5a;
+}
+
+p {
+    font-weight: 400;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+
+.text-center {
+    font-weight: 600;
+}
+
+h4, h5 {
+    font-family: "Cormorant Garamond", serif;
+    color: #333;
+}
+
+.text-danger {
+    font-size: 0.9rem;
+    font-style: italic;
+}
 
 /* Header and Navbar Styling */
 .header-with-navbar {
@@ -14,12 +38,8 @@ body {
     margin-bottom: 0;
 }
 
-/* Store Logo */
 .store-logo {
-    font-family: "Cormorant Garamond", serif;
     font-weight: 700;
-    color: #5a5a5a;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     font-size: 3rem;
     margin: 0;
     text-align: center;
@@ -30,13 +50,15 @@ body {
     font-family: "Cormorant Garamond", serif;
 }
 
-.navbar-nav .nav-link {
+.navbar-nav .nav-link, 
+.dropdown-menu .dropdown-item {
     font-weight: 500;
-    color: #5a5a5a;
     font-size: 1.2rem;
+    color: #5a5a5a;
 }
 
 .navbar-nav .nav-link:hover,
+.dropdown-menu .dropdown-item:hover,
 .navbar-nav .nav-item .bx:hover {
     color: #d4a373;
 }
@@ -49,98 +71,67 @@ body {
     background-color: #5a5a5a;
 }
 
-
 .navbar-nav .nav-item .bx {
-    font-size: 1.8rem; /* increasing icon size on navbar since they are too small compared to the text */
+    font-size: 1.8rem;
 }
-
-.dropdown-menu .dropdown-item {
-    font-weight: 500; 
-    color: #5a5a5a;
-}
-
-.dropdown-menu .dropdown-item:hover {
-    color: #d4a373;
-    background-color: transparent;
-}
-
 
 /* Footer Styling */
 footer {
     background-color: #fdf6f0;
-    font-family: "Cormorant Garamond", serif; /* Match font */
-    color: #5a5a5a; /* Neutral text color */
-    border-top: 2px solid #d4a373; /* Optional: Add a subtle border */
-    text-align: center; /* Center the footer text */
-    padding: 1rem 0; /* Add spacing for readability */
+    border-top: 2px solid #d4a373;
+    text-align: center;
+    padding: 1rem 0;
 }
 
 footer p {
-    margin: 0; /* Remove extra margin around text */
+    margin: 0;
 }
-
 
 /* Card Styling */
 .card {
-    font-family: "Cormorant Garamond", serif; /* Apply the same font */
-    font-weight: 400; /* Regular weight for readability */
-    max-width: 300px; /* Set a maximum width for the cards */
-    margin: auto; /* Center align the cards within the column */
+    font-family: inherit;
+    font-weight: 400;
+    max-width: 300px;
+    margin: auto;
 }
 
 .card-img-top {
-    height: 200px; /* Set a specific height for uniformity */
-    object-fit: cover; /* Crop images to fit the defined height */
+    height: 200px;
+    object-fit: cover;
 }
 
 .card-title {
-    font-size: 1.5rem; /* Adjust title size */
-    color: #5a5a5a; /* Match text color with theme */
+    font-size: 1.5rem;
+    color: #5a5a5a;
 }
 
 .card-text {
-    font-size: 1.2rem; /* Adjust text size */
-    color: #5a5a5a; /* Match text color with theme */
+    font-size: 1.2rem;
+    color: #5a5a5a;
 }
 
 .btn-cart {
-    background-color: #f4a261; /* Custom color for the button */
-    color: #fff; /* Icon color */
-    border: none; /* Remove border */
-    border-radius: 50%; /* Make the button circular */
-    width: 40px; /* Set width to create a circle */
-    height: 40px; /* Set height to create a circle */
-    display: flex; /* Center icon inside the button */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    font-size: 1.5rem; /* Size of the icon */
-    transition: background-color 0.3s ease; /* Smooth hover transition */
+    background-color: #f4a261;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    transition: background-color 0.3s ease;
     text-decoration: none;
 }
 
 .btn-cart:hover {
-    background-color: #e76f51; /* Darker shade for hover effect */
-    color: #ffffff; /* Ensure icon color remains visible */
+    background-color: #e76f51;
 }
 
-
-/* text and general */
-p {
-    font-family: "Cormorant Garamond", serif;
-    font-weight: 400; /* Use cormorant-garamond-regular for the paragraph */
-    color: #5a5a5a;
-    font-size: 1.2rem; /* Slightly larger paragraph text for readability */
-    margin-bottom: 1.5rem; /* Add spacing below the paragraph */
-}
-
-.text-center {
-    font-family: "Cormorant Garamond", serif;
-    color: #5a5a5a;
-}
-
+/* Buttons */
 .my-btn {
-    font-family: "Cormorant Garamond", serif;
-    background-color: #d4a373; /* Match site theme */
+    background-color: #d4a373;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -150,37 +141,77 @@ p {
 }
 
 .my-btn:hover {
-    background-color: #a65e2e; /* Slightly darker hover effect */
+    background-color: #a65e2e;
 }
 
 
 /* Form Styling */
-form {
-    font-family: "Cormorant Garamond", serif; /* Ensure consistent font */
-    font-size: 1.1rem; /* Slightly larger text for better readability */
-    color: #5a5a5a; /* Neutral color for text */
-}
 
-/* Form Labels */
 form .form-label {
-    font-weight: 600; /* Medium weight for labels */
-    color: #5a5a5a;
+    font-weight: 600;
 }
 
-/* Form Inputs */
 form .form-control {
-    border: 1px solid #d4a373; /* Match with site theme */
-    border-radius: 5px; /* Add subtle rounding */
+    border: 1px solid #d4a373;
+    border-radius: 5px;
     padding: 10px;
 }
 
 form .form-control:focus {
     border-color: #d4a373;
-    box-shadow: 0 0 5px rgba(212, 163, 115, 0.5); /* Subtle focus glow */
+    box-shadow: 0 0 5px rgba(212, 163, 115, 0.5);
 }
 
-.text-danger {
-    font-size: 0.9rem;
-    font-style: italic;
+/* Basket Styling */
+.basket-items {
+    max-width: 700px;
+    margin: 0 auto;
 }
 
+.basket-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 0.5px solid #ddd;
+}
+
+.basket-item h5 {
+    font-size: 1.4rem;
+}
+
+.basket-item p {
+    font-size: 1.2rem;
+}
+
+.basket-item button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    font-size: 1.2rem;
+}
+
+.cart-remove {
+    background-color: #d04e4e;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.cart-remove:hover {
+    background-color: #9e3131;
+
+}
+
+/* Miscellaneous */
+hr {
+    border: 0.5px solid #ddd;
+}

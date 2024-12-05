@@ -75,9 +75,34 @@ class Basket(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', back_populates='basket')
     candles = db.relationship('Candle', secondary=basket_candle, back_populates='baskets')  # Many-to-Many relationship with Candle
+    items = db.relationship('BasketItem', back_populates='basket', cascade="all, delete-orphan")
+
+    def add_candle(self, candle):
+        if candle not in self.candles:
+            self.candles.append(candle)
+
+    def remove_candle(self, candle):
+        if candle in self.candles:
+            self.candles.remove(candle)
+
+    def clear(self):
+        self.candles.clear()
 
     def __repr__(self):
         return f"<Basket {self.id} - User {self.user.username}>"
+
+class BasketItem(db.Model):
+    """Model for items in the basket"""
+    id = db.Column(db.Integer, primary_key=True)
+    basket_id = db.Column(db.Integer, db.ForeignKey('basket.id'), nullable=False)
+    candle_id = db.Column(db.Integer, db.ForeignKey('candle.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False, default=1)
+
+    basket = db.relationship('Basket', back_populates='items')
+    candle = db.relationship('Candle')
+
+    def __repr__(self):
+        return f"<BasketItem {self.candle.name} x{self.quantity}>"
 
 
 class Order(db.Model):

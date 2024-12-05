@@ -1,9 +1,9 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db, admin
 from flask_admin.contrib.sqla import ModelView
-from app.models import Candle, Category, User
-from app.forms import RegistrationForm, LoginForm, ChangePasswordForm, DeleteAccountForm
+from app.models import Candle, Category, User, Basket, BasketItem
+from app.forms import RegistrationForm, LoginForm, ChangePasswordForm, DeleteAccountForm, CSRFProtectForm
 
 admin.add_view(ModelView(Candle, db.session))
 admin.add_view(ModelView(Category, db.session))
@@ -17,7 +17,8 @@ def inject_categories():
 @app.route('/')
 def home():
     candles = Candle.query.all()
-    return render_template('home.html', candles=candles)
+    form = CSRFProtectForm()
+    return render_template('home.html', candles=candles, form=form)
 
 @app.route('/category/<int:category_id>')
 def category_page(category_id):
@@ -71,10 +72,10 @@ def account():
 
 @app.route('/product/<int:candle_id>')
 def product(candle_id):
-    # Fetch the candle from the database
     candle = Candle.query.get_or_404(candle_id)
+    form = CSRFProtectForm()
     category = candle.categories[0]
-    return render_template('product.html', candle=candle, category=category)
+    return render_template('product.html', candle=candle, category=category, form=form)
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
@@ -105,3 +106,93 @@ def delete_account():
             flash("Incorrect password. Please try again.", "danger")
     
     return render_template('delete.html', form=form)
+
+@app.route('/add_to_basket/<int:candle_id>', methods=['POST'])
+@login_required
+def add_to_basket(candle_id):
+    candle = Candle.query.get_or_404(candle_id)
+    quantity = int(request.form.get('quantity', 1))  # Default to 1 if not specified
+
+    if not current_user.basket:
+        # Create a basket for the user if it doesn't exist
+        basket = Basket(user=current_user)
+        db.session.add(basket)
+        db.session.commit()
+
+    # Check if the item already exists in the basket
+    item = next((item for item in current_user.basket.items if item.candle_id == candle.id), None)
+    if item:
+        # Update quantity if it exists
+        item.quantity += quantity
+    else:
+        # Add new item if it doesn't exist
+        new_item = BasketItem(basket=current_user.basket, candle=candle, quantity=quantity)
+        db.session.add(new_item)
+
+    db.session.commit()
+
+    flash(f"Added {quantity} of {candle.name} to your basket!", "success")
+    return redirect(request.referrer or url_for('home'))
+
+
+@app.route('/remove_from_basket/<int:candle_id>', methods=['POST'])
+@login_required
+def remove_from_basket(candle_id):
+    candle = Candle.query.get_or_404(candle_id)
+
+    if current_user.basket:
+        # Find the item in the basket
+        item = next((item for item in current_user.basket.items if item.candle_id == candle.id), None)
+        if item:
+            db.session.delete(item)  # Remove the item from the basket
+            db.session.commit()
+            flash(f"{candle.name} removed from your basket.", "info")
+
+    return redirect(url_for('basket'))
+
+@app.route('/basket')
+@login_required
+def basket():
+    items = current_user.basket.items if current_user.basket else []
+    total_price = sum(item.candle.price * item.quantity for item in items)
+    return render_template('basket.html', items=items, total_price=total_price)
+
+@app.route('/update_basket', methods=['POST'])
+@login_required
+def update_basket():
+    """Update the basket quantity for a specific candle."""
+    data = request.get_json()  # Get JSON data from the frontend
+    item_id = data.get('item_id')  # Extract the BasketItem ID
+    action = data.get('action')  # Extract the action (increment/decrement)
+
+    item = BasketItem.query.get_or_404(item_id)
+    if item.basket.user_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Unauthorized access'}), 403
+
+    # Process the action
+    if action == 'increment':
+        item.quantity += 1
+    elif action == 'decrement' and item.quantity > 1:
+        item.quantity -= 1
+    elif action == 'remove' or (action == 'decrement' and item.quantity == 1):
+        db.session.delete(item)
+        db.session.commit()
+        return jsonify({
+            'success': True,
+            'quantity': 0,  # Item removed
+            'item_total': 0,  # No price if removed
+            'basket_total': sum(i.candle.price * i.quantity for i in current_user.basket.items)
+        })
+
+    db.session.commit()
+
+    # Calculate totals
+    item_total = item.candle.price * item.quantity
+    basket_total = sum(i.candle.price * i.quantity for i in current_user.basket.items)
+
+    return jsonify({
+        'success': True,
+        'quantity': item.quantity,
+        'item_total': item_total,
+        'basket_total': basket_total
+    })

@@ -22,7 +22,10 @@
                         <h5 class="card-title">{{ candle.name }}</h5>
                         <p class="card-text">Price: £{{ "%.2f" | format(candle.price) }}</p>
                     </div>
-                    <a href="#" class="btn-cart"><i class='bx bxs-cart-alt' ></i></a>
+                    <form action="{{ url_for('add_to_basket', candle_id=candle.id) }}" method="POST" style="display: inline;">
+                        {{ form.hidden_tag() }}
+                        <button type="submit" class="btn-cart"><i class='bx bx-cart-add'></i></button>
+                    </form>
                 </div>
             </div>
         </div>

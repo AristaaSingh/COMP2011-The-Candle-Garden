@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center mb-4">Your Basket</h2>
+    <div class="basket-items">
+        {% for item in items %}
+        <div id="basket-item-{{ item.id }}" class="basket-item d-flex justify-content-between align-items-center py-3">
+            <!-- Candle Name -->
+            <div>
+                <h5 class="mb-1">{{ item.candle.name }}</h5>
+                <div class="d-flex align-items-center">
+                    <!-- Quantity Controls -->
+                    <button type="button" class="my-btn update-basket" data-item-id="{{ item.id }}" data-action="decrement">
+                        <i class='bx bx-minus'></i>
+                    </button>
+                    <span class="mx-2"><p id="item-quantity-{{ item.id }}">{{ item.quantity }}</p></span>
+                    <button type="button" class="my-btn update-basket" data-item-id="{{ item.id }}" data-action="increment">
+                        <i class='bx bx-plus'></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Price -->
+            <div>
+                <p id="item-total-{{ item.id }}" class="mb-0">£{{ "%.2f"|format(item.candle.price * item.quantity) }}</p>
+            </div>
+            <!-- Remove Button -->
+            <div>
+                <button type="button" class="cart-remove update-basket" data-item-id="{{ item.id }}" data-action="remove">
+                    <i class='bx bx-trash'></i>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-end mt-4">
+        <h4 id="basket-total">Total: £{{ "%.2f"|format(total_price) }}</h4>
+    </div>
+</div>
+{% endblock %}
