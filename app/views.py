@@ -1,9 +1,10 @@
-from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request, jsonify, make_response
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db, admin
 from flask_admin.contrib.sqla import ModelView
-from app.models import Candle, Category, User, Basket, BasketItem
+from app.models import Candle, Category, User, Basket, BasketItem, Order
 from app.forms import RegistrationForm, LoginForm, ChangePasswordForm, DeleteAccountForm, CSRFProtectForm
+
 
 admin.add_view(ModelView(Candle, db.session))
 admin.add_view(ModelView(Category, db.session))
@@ -68,7 +69,8 @@ def logout():
 
 @app.route('/account')
 def account():
-    return render_template('account.html')
+    form = DeleteAccountForm()
+    return render_template('account.html', form=form)
 
 @app.route('/product/<int:candle_id>')
 def product(candle_id):
@@ -153,9 +155,10 @@ def remove_from_basket(candle_id):
 @app.route('/basket')
 @login_required
 def basket():
+    form = CSRFProtectForm()
     items = current_user.basket.items if current_user.basket else []
     total_price = sum(item.candle.price * item.quantity for item in items)
-    return render_template('basket.html', items=items, total_price=total_price)
+    return render_template('basket.html', items=items, total_price=total_price, form=form)
 
 @app.route('/update_basket', methods=['POST'])
 @login_required
@@ -196,3 +199,38 @@ def update_basket():
         'item_total': item_total,
         'basket_total': basket_total
     })
+
+
+@app.route('/checkout', methods=['POST'])
+@login_required
+def checkout():
+    if not current_user.basket or not current_user.basket.items:
+        flash('Your basket is empty.', 'danger')
+        return redirect(url_for('basket'))
+
+    # Check stock availability
+    for item in current_user.basket.items:
+        if item.quantity > item.candle.stock:
+            flash(f"Insufficient stock for {item.candle.name}. Available: {item.candle.stock}", 'danger')
+            return redirect(url_for('basket'))
+
+    # Deduct stock and record the order
+    total_price = 0
+    for item in current_user.basket.items:
+        candle = item.candle
+        candle.stock -= item.quantity  # Deduct stock
+        total_price += candle.price * item.quantity
+
+    # Create an order
+    order = Order(user=current_user, total_price=total_price)
+    db.session.add(order)
+
+    # Add items to the order
+    for item in current_user.basket.items:
+        order.candles.append(item.candle)
+        db.session.delete(item)  # Clear basket items after checkout
+
+    db.session.commit()
+
+    flash('Checkout successful! Your order has been placed.', 'success')
+    return redirect(url_for('account'))

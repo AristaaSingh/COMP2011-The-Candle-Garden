@@ -5,6 +5,17 @@ body {
     background-color: #fff;
 }
 
+body.dark-theme {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.light-theme {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+
 p, .text-center, form {
     font-family: "Cormorant Garamond", serif;
     color: #5a5a5a;
@@ -20,7 +31,7 @@ p {
     font-weight: 600;
 }
 
-h4, h5 {
+h3, h4, h5 {
     font-family: "Cormorant Garamond", serif;
     color: #333;
 }
@@ -29,6 +40,7 @@ h4, h5 {
     font-size: 0.9rem;
     font-style: italic;
 }
+
 
 /* Header and Navbar Styling */
 .header-with-navbar {
@@ -75,6 +87,7 @@ h4, h5 {
     font-size: 1.8rem;
 }
 
+
 /* Footer Styling */
 footer {
     background-color: #fdf6f0;
@@ -86,6 +99,7 @@ footer {
 footer p {
     margin: 0;
 }
+
 
 /* Card Styling */
 .card {
@@ -111,7 +125,7 @@ footer p {
 }
 
 .btn-cart {
-    background-color: #f4a261;
+    background-color: #d4a373;
     color: #fff;
     border: none;
     border-radius: 50%;
@@ -129,24 +143,80 @@ footer p {
     background-color: #e76f51;
 }
 
+.grayed-out {
+    filter: grayscale(30%);
+    opacity: 0.8;
+}
+
+.card-img-container {
+    position: relative;
+}
+
+.out-of-stock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5rem;
+    font-family: "Cormorant Garamond", serif;
+    opacity: 0.9;
+    z-index: 1;
+}
+
+
+/* General Styling for Flash Messages */
+.flash-messages {
+    background-color: #f4a261;
+    color: #ffffff;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 1.2rem;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.flash-message.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+
 /* Buttons */
-.my-btn {
-    background-color: #d4a373;
+.my-btn, .account-btn {
     color: white;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
     transition: background-color 0.3s ease;
     text-decoration: none;
+    font-family: "Cormorant Garamond", serif;
+}
+
+.my-btn {
+    background-color: #d4a373;
 }
 
 .my-btn:hover {
     background-color: #a65e2e;
 }
 
+.account-btn {
+    background-color: #d04e4e;
+}
+
+.account-btn:hover {
+    background-color: #9e3131;
+}
+
 
 /* Form Styling */
-
 form .form-label {
     font-weight: 600;
 }
@@ -161,6 +231,7 @@ form .form-control:focus {
     border-color: #d4a373;
     box-shadow: 0 0 5px rgba(212, 163, 115, 0.5);
 }
+
 
 /* Basket Styling */
 .basket-items {
@@ -210,6 +281,7 @@ form .form-control:focus {
     background-color: #9e3131;
 
 }
+
 
 /* Miscellaneous */
 hr {

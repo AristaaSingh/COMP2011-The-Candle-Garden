@@ -2,6 +2,7 @@ from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
+
 # Association Table for Many-to-Many Relationship between Candle and Category
 candle_category = db.Table(
     'candle_category',
@@ -16,13 +17,6 @@ basket_candle = db.Table(
     db.Column('candle_id', db.Integer, db.ForeignKey('candle.id'), primary_key=True)
 )
 
-# Association Table for Many-to-Many Relationship between Order and Candle
-order_candle = db.Table(
-    'order_candle',
-    db.Column('order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True),
-    db.Column('candle_id', db.Integer, db.ForeignKey('candle.id'), primary_key=True)
-)
-
 
 class Candle(db.Model):
     """Model for Candles"""
@@ -34,7 +28,7 @@ class Candle(db.Model):
     image_filename = db.Column(db.String(255), nullable=True)
     categories = db.relationship('Category', secondary=candle_category, back_populates='candles')
     baskets = db.relationship('Basket', secondary=basket_candle, back_populates='candles')
-    orders = db.relationship('Order', secondary=order_candle, back_populates='candles')
+    orders = db.relationship('OrderItem', back_populates='candle')
 
     def __repr__(self):
         return f"<Candle {self.name}>"
@@ -56,7 +50,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
-    orders = db.relationship('Order', back_populates='user')
+    orders = db.relationship('Order', back_populates='user', cascade='all, delete-orphan')
     basket = db.relationship('Basket', uselist=False, back_populates='user')  # One-to-One relationship with Basket
 
     def set_password(self, password):
@@ -91,6 +85,7 @@ class Basket(db.Model):
     def __repr__(self):
         return f"<Basket {self.id} - User {self.user.username}>"
 
+
 class BasketItem(db.Model):
     """Model for items in the basket"""
     id = db.Column(db.Integer, primary_key=True)
@@ -112,7 +107,19 @@ class Order(db.Model):
     order_date = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     total_price = db.Column(db.Float, nullable=False, default=0.0)
     user = db.relationship('User', back_populates='orders')
-    candles = db.relationship('Candle', secondary=order_candle, back_populates='orders')
+    items = db.relationship('OrderItem', back_populates='order', cascade='all, delete-orphan')  # Use OrderItem for association
 
     def __repr__(self):
         return f"<Order {self.id} - User {self.user.username}>"
+
+
+class OrderItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    candle_id = db.Column(db.Integer, db.ForeignKey('candle.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False, default=1)
+    candle = db.relationship('Candle')
+    order = db.relationship('Order', back_populates='items')
+
+    def __repr__(self):
+        return f"<OrderItem {self.candle.name} x{self.quantity}>"

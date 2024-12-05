@@ -3,8 +3,11 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from app.models import User
 
+
+# form for CSRF protection for submit buttons etc
 class CSRFProtectForm(FlaskForm):
     pass
+
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=100)])
@@ -23,10 +26,12 @@ class RegistrationForm(FlaskForm):
         if user:
             raise ValidationError('That email is already registered.')
 
+
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
+
 
 class ChangePasswordForm(FlaskForm):
     current_password = PasswordField('Current Password', validators=[DataRequired()])
@@ -34,6 +39,7 @@ class ChangePasswordForm(FlaskForm):
     confirm_password = PasswordField('Confirm New Password', 
                                      validators=[DataRequired(), EqualTo('new_password')])
     submit = SubmitField('Change Password')
+
 
 class DeleteAccountForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
