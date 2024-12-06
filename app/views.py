@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request, jsonify, m
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db, admin
 from flask_admin.contrib.sqla import ModelView
-from app.models import Candle, Category, User, Basket, BasketItem, Order
+from app.models import Candle, Category, User, Basket, BasketItem, Order, OrderItem
 from app.forms import RegistrationForm, LoginForm, ChangePasswordForm, DeleteAccountForm, CSRFProtectForm
 
 
@@ -227,7 +227,12 @@ def checkout():
 
     # Add items to the order
     for item in current_user.basket.items:
-        order.candles.append(item.candle)
+        order_item = OrderItem(
+            order=order,
+            candle=item.candle,
+            quantity=item.quantity
+        )
+        db.session.add(order_item)
         db.session.delete(item)  # Clear basket items after checkout
 
     db.session.commit()
