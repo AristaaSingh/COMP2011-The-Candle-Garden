@@ -81,7 +81,6 @@ def logout():
     return redirect(url_for('home'))    
 
 @app.route('/account', methods=['GET', 'POST'])
-@login_required
 def account():
     """Account management and address handling."""
     form = DeleteAccountForm()
