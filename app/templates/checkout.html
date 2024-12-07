@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center mb-4">Delivery Address and Checkout!</h2>
+    
+    <!-- Address Selection Form -->
+    <form action="{{ url_for('checkout') }}" method="POST">
+        {% if addresses %}
+            <h3>Select a Delivery Address</h3>
+            {% for address in addresses %}
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="delivery_address_id" id="address{{ address.id }}" 
+                       value="{{ address.id }}" 
+                       data-address='{
+                           "address_line1": "{{ address.address_line1 }}",
+                           "address_line2": "{{ address.address_line2 or '' }}",
+                           "city": "{{ address.city }}",
+                           "state": "{{ address.state or '' }}",
+                           "postal_code": "{{ address.postal_code }}",
+                           "country": "{{ address.country }}"
+                       }'>
+                <label class="form-check-label" for="address{{ address.id }}">
+                    {{ address.address_line1 }}, {{ address.address_line2 or '' }}
+                    {{ address.city }}, {{ address.state or '' }} {{ address.postal_code }},
+                    {{ address.country }}
+                </label>
+            </div>
+            {% endfor %}
+        {% endif %}
+    
+        <h4 class="mt-4">Or Add a New Address</h4>
+        {{ address_form.hidden_tag() }}
+        <div class="form-group">
+            {{ address_form.address_line1.label }}
+            {{ address_form.address_line1(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ address_form.address_line2.label }}
+            {{ address_form.address_line2(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ address_form.city.label }}
+            {{ address_form.city(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ address_form.state.label }}
+            {{ address_form.state(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ address_form.postal_code.label }}
+            {{ address_form.postal_code(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ address_form.country.label }}
+            {{ address_form.country(class="form-control") }}
+        </div>
+        <br>
+        <button type="submit" class="my-btn">Place Your Order Now!</button>
+    </form>    
+</div>
+{% endblock %}

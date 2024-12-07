@@ -2,12 +2,13 @@ from flask import render_template, redirect, url_for, flash, request, jsonify, m
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db, admin
 from flask_admin.contrib.sqla import ModelView
-from app.models import Candle, Category, User, Basket, BasketItem, Order, OrderItem
-from app.forms import RegistrationForm, LoginForm, ChangePasswordForm, DeleteAccountForm, CSRFProtectForm
+from app.models import Candle, Category, User, Basket, BasketItem, Order, OrderItem, Address
+from app.forms import RegistrationForm, LoginForm, ChangePasswordForm, DeleteAccountForm, CSRFProtectForm, AddressForm
 
 
 admin.add_view(ModelView(Candle, db.session))
 admin.add_view(ModelView(Category, db.session))
+
 
 # to make the categories available everywhere
 @app.context_processor
@@ -15,6 +16,8 @@ def inject_categories():
     categories = Category.query.all()
     return dict(categories=categories)
 
+
+# pages or display related routes
 @app.route('/')
 def home():
     candles = Candle.query.all()
@@ -23,10 +26,20 @@ def home():
 
 @app.route('/category/<int:category_id>')
 def category_page(category_id):
+    form = CSRFProtectForm()
     category = Category.query.get_or_404(category_id)
     candles = category.candles  # Get all candles in this category
-    return render_template('category.html', category=category, candles=candles)
+    return render_template('category.html', category=category, candles=candles, form=form)
 
+@app.route('/product/<int:candle_id>')
+def product(candle_id):
+    candle = Candle.query.get_or_404(candle_id)
+    form = CSRFProtectForm()
+    category = candle.categories[0]
+    return render_template('product.html', candle=candle, category=category, form=form)
+
+
+# account related routes
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -67,17 +80,30 @@ def logout():
     flash('You have been logged out.', 'info')
     return redirect(url_for('home'))    
 
-@app.route('/account')
+@app.route('/account', methods=['GET', 'POST'])
+@login_required
 def account():
+    """Account management and address handling."""
     form = DeleteAccountForm()
-    return render_template('account.html', form=form)
+    address_form = AddressForm()
 
-@app.route('/product/<int:candle_id>')
-def product(candle_id):
-    candle = Candle.query.get_or_404(candle_id)
-    form = CSRFProtectForm()
-    category = candle.categories[0]
-    return render_template('product.html', candle=candle, category=category, form=form)
+    # Handle new address submission
+    if address_form.validate_on_submit():
+        address = Address(
+            user=current_user,
+            address_line1=address_form.address_line1.data,
+            address_line2=address_form.address_line2.data,
+            city=address_form.city.data,
+            state=address_form.state.data,
+            postal_code=address_form.postal_code.data,
+            country=address_form.country.data
+        )
+        db.session.add(address)
+        db.session.commit()
+        flash("Address added successfully!", "success")
+        return redirect(url_for('account'))
+
+    return render_template('account.html', form=form, address_form=address_form)
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
@@ -101,55 +127,81 @@ def delete_account():
         if current_user.check_password(form.password.data):
             db.session.delete(current_user)
             db.session.commit()
-            
             flash("Your account has been successfully deleted.", "success")
             return redirect(url_for('home'))
         else:
             flash("Incorrect password. Please try again.", "danger")
-    
     return render_template('delete.html', form=form)
 
+@app.route('/addresses', methods=['GET', 'POST'])
+@login_required
+def addresses():
+    form = AddressForm()
+    if form.validate_on_submit():
+        address = Address(
+            user=current_user,
+            address_line1=form.address_line1.data,
+            address_line2=form.address_line2.data,
+            city=form.city.data,
+            state=form.state.data,
+            postal_code=form.postal_code.data,
+            country=form.country.data
+        )
+        db.session.add(address)
+        db.session.commit()
+        flash('Address saved successfully!', 'success')
+        return redirect(url_for('addresses'))
+    return render_template('addresses.html', form=form, addresses=current_user.addresses)
+
+@app.route('/remove_address/<int:address_id>', methods=['POST'])
+@login_required
+def remove_address(address_id):
+    """Remove an address."""
+    address = Address.query.get_or_404(address_id)
+
+    if address.user_id != current_user.id:
+        flash("Unauthorized access!", "danger")
+        return redirect(url_for('account'))
+
+    db.session.delete(address)
+    db.session.commit()
+    flash("Address removed successfully.", "success")
+    return redirect(url_for('account'))
+
+
+# basket related routes
 @app.route('/add_to_basket/<int:candle_id>', methods=['POST'])
 @login_required
 def add_to_basket(candle_id):
     candle = Candle.query.get_or_404(candle_id)
-    quantity = int(request.form.get('quantity', 1))  # Default to 1 if not specified
-
+    quantity = int(request.form.get('quantity', 1))
     if not current_user.basket:
-        # Create a basket for the user if it doesn't exist
+        # create basket instance if it doesnt exist
         basket = Basket(user=current_user)
         db.session.add(basket)
         db.session.commit()
-
-    # Check if the item already exists in the basket
+    # increase qantity if item already exists in basket
     item = next((item for item in current_user.basket.items if item.candle_id == candle.id), None)
     if item:
-        # Update quantity if it exists
         item.quantity += quantity
     else:
-        # Add new item if it doesn't exist
+        # new item if it didnt already exist
         new_item = BasketItem(basket=current_user.basket, candle=candle, quantity=quantity)
         db.session.add(new_item)
-
     db.session.commit()
-
     flash(f"Added {quantity} of {candle.name} to your basket!", "success")
     return redirect(request.referrer or url_for('home'))
-
 
 @app.route('/remove_from_basket/<int:candle_id>', methods=['POST'])
 @login_required
 def remove_from_basket(candle_id):
     candle = Candle.query.get_or_404(candle_id)
-
     if current_user.basket:
-        # Find the item in the basket
         item = next((item for item in current_user.basket.items if item.candle_id == candle.id), None)
         if item:
-            db.session.delete(item)  # Remove the item from the basket
+            db.session.delete(item)
             db.session.commit()
             flash(f"{candle.name} removed from your basket.", "info")
-
     return redirect(url_for('basket'))
 
 @app.route('/basket')
@@ -164,15 +216,14 @@ def basket():
 @login_required
 def update_basket():
     """Update the basket quantity for a specific candle."""
-    data = request.get_json()  # Get JSON data from the frontend
-    item_id = data.get('item_id')  # Extract the BasketItem ID
-    action = data.get('action')  # Extract the action (increment/decrement)
+    data = request.get_json()
+    item_id = data.get('item_id')
+    action = data.get('action')
 
     item = BasketItem.query.get_or_404(item_id)
     if item.basket.user_id != current_user.id:
         return jsonify({'success': False, 'message': 'Unauthorized access'}), 403
-
-    # Process the action
+    # process the action
     if action == 'increment':
         item.quantity += 1
     elif action == 'decrement' and item.quantity > 1:
@@ -186,13 +237,10 @@ def update_basket():
             'item_total': 0,  # No price if removed
             'basket_total': sum(i.candle.price * i.quantity for i in current_user.basket.items)
         })
-
     db.session.commit()
-
-    # Calculate totals
+    # calculate totals
     item_total = item.candle.price * item.quantity
     basket_total = sum(i.candle.price * i.quantity for i in current_user.basket.items)
-
     return jsonify({
         'success': True,
         'quantity': item.quantity,
@@ -200,42 +248,58 @@ def update_basket():
         'basket_total': basket_total
     })
 
-
-@app.route('/checkout', methods=['POST'])
+@app.route('/checkout', methods=['GET', 'POST'])
 @login_required
 def checkout():
-    if not current_user.basket or not current_user.basket.items:
-        flash('Your basket is empty.', 'danger')
-        return redirect(url_for('basket'))
+    """Checkout page."""
+    address_form = AddressForm()
 
-    # Check stock availability
-    for item in current_user.basket.items:
-        if item.quantity > item.candle.stock:
-            flash(f"Insufficient stock for {item.candle.name}. Available: {item.candle.stock}", 'danger')
+    if request.method == 'POST':
+        if not current_user.basket or not current_user.basket.items:
+            flash('Your basket is empty.', 'danger')
             return redirect(url_for('basket'))
 
-    # Deduct stock and record the order
-    total_price = 0
-    for item in current_user.basket.items:
-        candle = item.candle
-        candle.stock -= item.quantity  # Deduct stock
-        total_price += candle.price * item.quantity
+        # Selected address or new address
+        delivery_address_id = request.form.get('delivery_address_id')
+        if delivery_address_id:
+            delivery_address = Address.query.get(delivery_address_id)
+        elif address_form.validate():
+            delivery_address = Address(
+                user=current_user,
+                address_line1=address_form.address_line1.data,
+                address_line2=address_form.address_line2.data,
+                city=address_form.city.data,
+                state=address_form.state.data,
+                postal_code=address_form.postal_code.data,
+                country=address_form.country.data,
+            )
+            db.session.add(delivery_address)
+            db.session.commit()
+        else:
+            flash("Please select or add a valid delivery address.", "danger")
+            return redirect(url_for('checkout'))
 
-    # Create an order
-    order = Order(user=current_user, total_price=total_price)
-    db.session.add(order)
+        # Validate stock and place the order
+        for item in current_user.basket.items:
+            if item.quantity > item.candle.stock:
+                flash(f"Insufficient stock for {item.candle.name}.", "danger")
+                return redirect(url_for('basket'))
 
-    # Add items to the order
-    for item in current_user.basket.items:
-        order_item = OrderItem(
-            order=order,
-            candle=item.candle,
-            quantity=item.quantity
-        )
-        db.session.add(order_item)
-        db.session.delete(item)  # Clear basket items after checkout
+        total_price = sum(item.candle.price * item.quantity for item in current_user.basket.items)
+        order = Order(user=current_user, total_price=total_price, delivery_address=delivery_address)
+        db.session.add(order)
 
-    db.session.commit()
+        for item in current_user.basket.items:
+            db.session.add(OrderItem(order=order, candle=item.candle, quantity=item.quantity))
+            item.candle.stock -= item.quantity
+            db.session.delete(item)
 
-    flash('Checkout successful! Your order has been placed.', 'success')
-    return redirect(url_for('account'))
+        db.session.commit()
+        flash("Checkout successful! Your order has been placed.", "success")
+        return redirect(url_for('account'))
+
+    return render_template(
+        'checkout.html', 
+        addresses=current_user.addresses, 
+        address_form=address_form
+    )

@@ -52,6 +52,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     orders = db.relationship('Order', back_populates='user', cascade='all, delete-orphan')
     basket = db.relationship('Basket', uselist=False, back_populates='user')  # One-to-One relationship with Basket
+    addresses = db.relationship('Address', back_populates='user', cascade='all, delete-orphan')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -61,6 +62,23 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f"<User {self.username}>"
+
+
+class Address(db.Model):
+    """Model for User Addresses"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    address_line1 = db.Column(db.String(255), nullable=False)
+    address_line2 = db.Column(db.String(255), nullable=True)
+    city = db.Column(db.String(100), nullable=False)
+    state = db.Column(db.String(100), nullable=True)
+    postal_code = db.Column(db.String(20), nullable=False)
+    country = db.Column(db.String(100), nullable=False)
+    
+    user = db.relationship('User', back_populates='addresses')
+
+    def __repr__(self):
+        return f"<Address {self.address_line1}, {self.city}>"
 
 
 class Basket(db.Model):
@@ -106,8 +124,10 @@ class Order(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     order_date = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     total_price = db.Column(db.Float, nullable=False, default=0.0)
+    delivery_address_id = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=False)
     user = db.relationship('User', back_populates='orders')
-    items = db.relationship('OrderItem', back_populates='order', cascade='all, delete-orphan')  # Use OrderItem for association
+    items = db.relationship('OrderItem', back_populates='order', cascade='all, delete-orphan')
+    delivery_address = db.relationship('Address')
 
     def __repr__(self):
         return f"<Order {self.id} - User {self.user.username}>"

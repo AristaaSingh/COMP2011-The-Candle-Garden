@@ -44,3 +44,13 @@ class ChangePasswordForm(FlaskForm):
 class DeleteAccountForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Delete Account')
+
+
+class AddressForm(FlaskForm):
+    address_line1 = StringField('Address Line 1', validators=[DataRequired()])
+    address_line2 = StringField('Address Line 2')
+    city = StringField('City', validators=[DataRequired()])
+    state = StringField('State')
+    postal_code = StringField('Postal Code', validators=[DataRequired()])
+    country = StringField('Country', validators=[DataRequired()])
+    submit = SubmitField('Save Address')

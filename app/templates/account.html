@@ -21,6 +21,52 @@
     </div>
     <hr>
 
+    <!-- addresses -->
+    <div class="mt-5">
+        <h3>Your Saved Addresses</h3>
+        {% for address in current_user.addresses %}
+        <div class="address-item mb-3 p-3 border rounded d-flex justify-content-between align-items-center">
+            <p>{{ address.address_line1 }}, {{ address.address_line2 }}</p>
+            <p>{{ address.city }}, {{ address.state }}, {{ address.country }} - {{ address.postal_code }}</p>
+            <form action="{{ url_for('remove_address', address_id=address.id) }}" method="POST">
+                {{ form.hidden_tag() }}
+                <button type="submit" class="cart-remove"><i class='bx bx-trash'></i></button>
+            </form>
+        </div>
+        {% endfor %}
+        <form action="{{ url_for('account') }}" method="POST" class="mt-4">
+            {{ address_form.hidden_tag() }}
+            <h4>Add a New Address</h4>
+            <div class="form-group">
+                {{ address_form.address_line1.label }}
+                {{ address_form.address_line1(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ address_form.address_line2.label }}
+                {{ address_form.address_line2(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ address_form.city.label }}
+                {{ address_form.city(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ address_form.state.label }}
+                {{ address_form.state(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ address_form.postal_code.label }}
+                {{ address_form.postal_code(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ address_form.country.label }}
+                {{ address_form.country(class="form-control") }}
+            </div>
+            <br>
+            <button type="submit" class="my-btn">Save Address</button>
+        </form>
+    </div>
+    <hr>
+
     <!-- order history -->
     <div class="mt-5">
         <h3>Your Order History</h3>
