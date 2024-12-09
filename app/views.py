@@ -61,7 +61,8 @@ def search():
     # Search for candles by name or description
     results = Candle.query.filter(
         (Candle.name.ilike(f"%{query}%")) |
-        (Candle.description.ilike(f"%{query}%"))
+        (Candle.description.ilike(f"%{query}%")) |
+        (Candle.categories.any(Category.name.ilike(f"%{query}%")))
     ).all()
     return render_template('search_results.html', query=query,
     results=results, form=form)
