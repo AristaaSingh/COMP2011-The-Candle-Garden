@@ -51,6 +51,20 @@ def cookie_policy():
     return render_template('cookie_policy.html')
 
 
+@app.route('/search')
+def search():
+    query = request.args.get('query', '').strip()
+    if not query:
+        flash("Please enter a search term.", "warning")
+        return redirect(url_for('home'))
+    # Search for candles by name or description
+    results = Candle.query.filter(
+        (Candle.name.ilike(f"%{query}%")) |
+        (Candle.description.ilike(f"%{query}%"))
+    ).all()
+    return render_template('search_results.html', query=query, results=results)
+
+
 # account related routes
 @app.route('/register', methods=['GET', 'POST'])
 def register():
