@@ -36,7 +36,7 @@ def product(candle_id):
     candle = Candle.query.get_or_404(candle_id)
     form = CSRFProtectForm()
     category = candle.categories[0]
-    return render_template('product.html', candle=candle, category=category, form=form)
+    return render_template('product.html', candle=candle, category=category, form=form, candle_reference=candle.image_reference)
 
 @app.route('/cookie-policy')
 def cookie_policy():
@@ -71,8 +71,7 @@ def login():
         if user and user.check_password(form.password.data):
             login_user(user, remember=True)
             flash('Login successful!', 'success')
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('home'))
+            return redirect(url_for('home'))
         else:
             flash('Login unsuccessful. Please check your email and password.', 'danger')
     return render_template('login.html', form=form)

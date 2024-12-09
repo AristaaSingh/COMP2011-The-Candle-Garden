@@ -83,8 +83,13 @@
     
         <!-- footer -->
         <footer class="bg-light text-center py-3">
-            <p class="mb-0">&copy; 2024 The Candle Garden. All rights reserved.</p>
+            <p>&copy; 2024 The Candle Garden. University of Leeds, COMP2011 Web Application Development Coursework 2, by Aristaa Singh [sc23as2]. All rights reserved.</p>
             <a href="{{ url_for('cookie_policy') }}">Cookie Policy</a>
+            <p>
+                {% if candle_reference %}
+                    <strong>Reference for image:</strong> {{ candle_reference }}
+                {% endif %}
+            </p>
         </footer>
     
         <!-- bootstrap JS & JQuery -->

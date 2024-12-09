@@ -26,6 +26,7 @@ class Candle(db.Model):
     price = db.Column(db.Float, nullable=False)
     stock = db.Column(db.Integer, nullable=False, default=0)
     image_filename = db.Column(db.String(255), nullable=True)
+    image_reference = db.Column(db.String(255), nullable=True)
     categories = db.relationship('Category', secondary=candle_category, back_populates='candles')
     baskets = db.relationship('Basket', secondary=basket_candle, back_populates='candles')
     orders = db.relationship('OrderItem', back_populates='candle')
