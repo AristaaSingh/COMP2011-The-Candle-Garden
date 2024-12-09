@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms.validators import ValidationError
 from app.models import User
 
 
@@ -10,16 +11,21 @@ class CSRFProtectForm(FlaskForm):
 
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=100)])
+    username = StringField('Username', validators=[DataRequired(),
+                                                   Length(min=2, max=100)])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
-    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    password = PasswordField('Password', validators=[DataRequired(),
+                                                     Length(min=6)])
+    confirm_password = PasswordField('Confirm Password',
+                                     validators=[DataRequired(),
+                                                 EqualTo('password')])
     submit = SubmitField('Register')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
-            raise ValidationError('That username is already taken. Please choose a different one.')
+            raise ValidationError("""That username is already taken.
+                                  Please choose a different one.""")
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
@@ -34,10 +40,12 @@ class LoginForm(FlaskForm):
 
 
 class ChangePasswordForm(FlaskForm):
-    current_password = PasswordField('Current Password', validators=[DataRequired()])
+    current_password = PasswordField('Current Password',
+                                     validators=[DataRequired()])
     new_password = PasswordField('New Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm New Password', 
-                                     validators=[DataRequired(), EqualTo('new_password')])
+    confirm_password = PasswordField('Confirm New Password',
+                                     validators=[DataRequired(),
+                                                 EqualTo('new_password')])
     submit = SubmitField('Change Password')
 
 

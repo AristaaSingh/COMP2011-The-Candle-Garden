@@ -1,9 +1,12 @@
-from flask import render_template, redirect, url_for, flash, request, jsonify, make_response
+from flask import render_template, redirect, url_for, flash
+from flask import request, jsonify, make_response
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db, admin
 from flask_admin.contrib.sqla import ModelView
-from app.models import Candle, Category, User, Basket, BasketItem, Order, OrderItem, Address
-from app.forms import RegistrationForm, LoginForm, ChangePasswordForm, DeleteAccountForm, CSRFProtectForm, AddressForm
+from app.models import Candle, Category, User, Basket
+from app.models import BasketItem, Order, OrderItem, Address
+from app.forms import RegistrationForm, LoginForm, ChangePasswordForm
+from app.forms import DeleteAccountForm, CSRFProtectForm, AddressForm
 
 
 admin.add_view(ModelView(Candle, db.session))
@@ -24,19 +27,24 @@ def home():
     form = CSRFProtectForm()
     return render_template('home.html', candles=candles, form=form)
 
+
 @app.route('/category/<int:category_id>')
 def category_page(category_id):
     form = CSRFProtectForm()
     category = Category.query.get_or_404(category_id)
     candles = category.candles  # Get all candles in this category
-    return render_template('category.html', category=category, candles=candles, form=form)
+    return render_template('category.html', category=category, candles=candles,
+                           form=form)
+
 
 @app.route('/product/<int:candle_id>')
 def product(candle_id):
     candle = Candle.query.get_or_404(candle_id)
     form = CSRFProtectForm()
     category = candle.categories[0]
-    return render_template('product.html', candle=candle, category=category, form=form, candle_reference=candle.image_reference)
+    return render_template('product.html', candle=candle, category=category,
+                           form=form, candle_reference=candle.image_reference)
+
 
 @app.route('/cookie-policy')
 def cookie_policy():
@@ -61,6 +69,7 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -73,15 +82,18 @@ def login():
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
         else:
-            flash('Login unsuccessful. Please check your email and password.', 'danger')
+            flash('Login unsuccessful. Please check your email and password.',
+                  'danger')
     return render_template('login.html', form=form)
+
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     flash('You have been logged out.', 'info')
-    return redirect(url_for('home'))    
+    return redirect(url_for('home'))
+
 
 @app.route('/account', methods=['GET', 'POST'])
 def account():
@@ -103,7 +115,9 @@ def account():
         db.session.commit()
         flash("Address added successfully!", "success")
         return redirect(url_for('account'))
-    return render_template('account.html', form=form, address_form=address_form)
+    return render_template('account.html', form=form,
+                           address_form=address_form)
+
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
@@ -119,6 +133,7 @@ def change_password():
             flash('Current password is incorrect.', 'danger')
     return render_template('change_password.html', form=form)
 
+
 @app.route('/delete_account', methods=['GET', 'POST'])
 @login_required
 def delete_account():
@@ -132,6 +147,7 @@ def delete_account():
         else:
             flash("Incorrect password. Please try again.", "danger")
     return render_template('delete.html', form=form)
+
 
 @app.route('/addresses', methods=['GET', 'POST'])
 @login_required
@@ -151,7 +167,9 @@ def addresses():
         db.session.commit()
         flash('Address saved successfully!', 'success')
         return redirect(url_for('addresses'))
-    return render_template('addresses.html', form=form, addresses=current_user.addresses)
+    return render_template('addresses.html', form=form,
+                           addresses=current_user.addresses)
+
 
 @app.route('/remove_address/<int:address_id>', methods=['POST'])
 @login_required
@@ -179,28 +197,33 @@ def add_to_basket(candle_id):
         db.session.add(basket)
         db.session.commit()
     # increase qantity if item already exists in basket
-    item = next((item for item in current_user.basket.items if item.candle_id == candle.id), None)
+    item = next((item for item in current_user.basket.items if
+                 item.candle_id == candle.id), None)
     if item:
         item.quantity += quantity
     else:
         # new item if it didnt already exist
-        new_item = BasketItem(basket=current_user.basket, candle=candle, quantity=quantity)
+        new_item = BasketItem(basket=current_user.basket, candle=candle,
+                              quantity=quantity)
         db.session.add(new_item)
     db.session.commit()
     flash(f"Added {quantity} of {candle.name} to your basket!", "success")
     return redirect(request.referrer or url_for('home'))
+
 
 @app.route('/remove_from_basket/<int:candle_id>', methods=['POST'])
 @login_required
 def remove_from_basket(candle_id):
     candle = Candle.query.get_or_404(candle_id)
     if current_user.basket:
-        item = next((item for item in current_user.basket.items if item.candle_id == candle.id), None)
+        item = next((item for item in current_user.basket.items if
+                     item.candle_id == candle.id), None)
         if item:
             db.session.delete(item)
             db.session.commit()
             flash(f"{candle.name} removed from your basket.", "info")
     return redirect(url_for('basket'))
+
 
 @app.route('/basket')
 @login_required
@@ -208,7 +231,9 @@ def basket():
     form = CSRFProtectForm()
     items = current_user.basket.items if current_user.basket else []
     total_price = sum(item.candle.price * item.quantity for item in items)
-    return render_template('basket.html', items=items, total_price=total_price, form=form)
+    return render_template('basket.html', items=items, total_price=total_price,
+                           form=form)
+
 
 @app.route('/update_basket', methods=['POST'])
 @login_required
@@ -219,7 +244,8 @@ def update_basket():
     action = data.get('action')
     item = BasketItem.query.get_or_404(item_id)
     if item.basket.user_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Unauthorized access'}), 403
+        return jsonify(
+            {'success': False, 'message': 'Unauthorized access'}), 403
     # process the action
     if action == 'increment':
         item.quantity += 1
@@ -232,18 +258,21 @@ def update_basket():
             'success': True,
             'quantity': 0,  # Item removed
             'item_total': 0,  # No price if removed
-            'basket_total': sum(i.candle.price * i.quantity for i in current_user.basket.items)
+            'basket_total': sum(i.candle.price * i.quantity for i in
+                                current_user.basket.items)
         })
     db.session.commit()
     # calculate totals
     item_total = item.candle.price * item.quantity
-    basket_total = sum(i.candle.price * i.quantity for i in current_user.basket.items)
+    basket_total = sum(i.candle.price * i.quantity for i in
+                       current_user.basket.items)
     return jsonify({
         'success': True,
         'quantity': item.quantity,
         'item_total': item_total,
         'basket_total': basket_total
     })
+
 
 @app.route('/checkout', methods=['GET', 'POST'])
 @login_required
@@ -278,18 +307,21 @@ def checkout():
             if item.quantity > item.candle.stock:
                 flash(f"Insufficient stock for {item.candle.name}.", "danger")
                 return redirect(url_for('basket'))
-        total_price = sum(item.candle.price * item.quantity for item in current_user.basket.items)
-        order = Order(user=current_user, total_price=total_price, delivery_address=delivery_address)
+        total_price = sum(item.candle.price * item.quantity for item in
+                          current_user.basket.items)
+        order = Order(user=current_user, total_price=total_price,
+                      delivery_address=delivery_address)
         db.session.add(order)
         for item in current_user.basket.items:
-            db.session.add(OrderItem(order=order, candle=item.candle, quantity=item.quantity))
+            db.session.add(OrderItem(order=order, candle=item.candle,
+                                     quantity=item.quantity))
             item.candle.stock -= item.quantity
             db.session.delete(item)
         db.session.commit()
         flash("Checkout successful! Your order has been placed.", "success")
         return redirect(url_for('account'))
     return render_template(
-        'checkout.html', 
-        addresses=current_user.addresses, 
+        'checkout.html',
+        addresses=current_user.addresses,
         address_form=address_form
     )

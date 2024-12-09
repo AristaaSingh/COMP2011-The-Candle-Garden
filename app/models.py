@@ -6,15 +6,19 @@ from flask_login import UserMixin
 # association Table for Many-to-Many Relationship between Candle and Category
 candle_category = db.Table(
     'candle_category',
-    db.Column('candle_id', db.Integer, db.ForeignKey('candle.id'), primary_key=True),
-    db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True)
+    db.Column('candle_id', db.Integer, db.ForeignKey('candle.id'),
+              primary_key=True),
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id'),
+              primary_key=True)
 )
 
 # association Table for Many-to-Many Relationship between Basket and Candle
 basket_candle = db.Table(
     'basket_candle',
-    db.Column('basket_id', db.Integer, db.ForeignKey('basket.id'), primary_key=True),
-    db.Column('candle_id', db.Integer, db.ForeignKey('candle.id'), primary_key=True)
+    db.Column('basket_id', db.Integer, db.ForeignKey('basket.id'),
+              primary_key=True),
+    db.Column('candle_id', db.Integer, db.ForeignKey('candle.id'),
+              primary_key=True)
 )
 
 
@@ -27,8 +31,10 @@ class Candle(db.Model):
     stock = db.Column(db.Integer, nullable=False, default=0)
     image_filename = db.Column(db.String(255), nullable=True)
     image_reference = db.Column(db.String(255), nullable=True)
-    categories = db.relationship('Category', secondary=candle_category, back_populates='candles')
-    baskets = db.relationship('Basket', secondary=basket_candle, back_populates='candles')
+    categories = db.relationship('Category', secondary=candle_category,
+                                 back_populates='candles')
+    baskets = db.relationship('Basket', secondary=basket_candle,
+                              back_populates='candles')
     orders = db.relationship('OrderItem', back_populates='candle')
 
     def __repr__(self):
@@ -39,7 +45,8 @@ class Category(db.Model):
     """Model for Categories"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False, unique=True)
-    candles = db.relationship('Candle', secondary=candle_category, back_populates='categories')
+    candles = db.relationship('Candle', secondary=candle_category,
+                              back_populates='categories')
 
     def __repr__(self):
         return f"<Category {self.name}>"
@@ -51,9 +58,11 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
-    orders = db.relationship('Order', back_populates='user', cascade='all, delete-orphan')
-    basket = db.relationship('Basket', uselist=False, back_populates='user')  # One-to-One relationship with Basket
-    addresses = db.relationship('Address', back_populates='user', cascade='all, delete-orphan')
+    orders = db.relationship('Order', back_populates='user',
+                             cascade='all, delete-orphan')
+    basket = db.relationship('Basket', uselist=False, back_populates='user')
+    addresses = db.relationship('Address', back_populates='user',
+                                cascade='all, delete-orphan')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -75,7 +84,7 @@ class Address(db.Model):
     state = db.Column(db.String(100), nullable=True)
     postal_code = db.Column(db.String(20), nullable=False)
     country = db.Column(db.String(100), nullable=False)
-    
+
     user = db.relationship('User', back_populates='addresses')
 
     def __repr__(self):
@@ -87,8 +96,10 @@ class Basket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', back_populates='basket')
-    candles = db.relationship('Candle', secondary=basket_candle, back_populates='baskets')  # Many-to-Many relationship with Candle
-    items = db.relationship('BasketItem', back_populates='basket', cascade="all, delete-orphan")
+    candles = db.relationship('Candle', secondary=basket_candle,
+                              back_populates='baskets')
+    items = db.relationship('BasketItem', back_populates='basket',
+                            cascade="all, delete-orphan")
 
     def add_candle(self, candle):
         if candle not in self.candles:
@@ -108,8 +119,10 @@ class Basket(db.Model):
 class BasketItem(db.Model):
     """Model for items in the basket"""
     id = db.Column(db.Integer, primary_key=True)
-    basket_id = db.Column(db.Integer, db.ForeignKey('basket.id'), nullable=False)
-    candle_id = db.Column(db.Integer, db.ForeignKey('candle.id'), nullable=False)
+    basket_id = db.Column(db.Integer, db.ForeignKey('basket.id'),
+                          nullable=False)
+    candle_id = db.Column(db.Integer, db.ForeignKey('candle.id'),
+                          nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)
 
     basket = db.relationship('Basket', back_populates='items')
@@ -123,11 +136,14 @@ class Order(db.Model):
     """Model for Orders"""
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    order_date = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+    order_date = db.Column(db.DateTime, nullable=False,
+                           default=db.func.current_timestamp())
     total_price = db.Column(db.Float, nullable=False, default=0.0)
-    delivery_address_id = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=False)
+    delivery_address_id = db.Column(db.Integer, db.ForeignKey('address.id'),
+                                    nullable=False)
     user = db.relationship('User', back_populates='orders')
-    items = db.relationship('OrderItem', back_populates='order', cascade='all, delete-orphan')
+    items = db.relationship('OrderItem', back_populates='order',
+                            cascade='all, delete-orphan')
     delivery_address = db.relationship('Address')
 
     def __repr__(self):
@@ -137,7 +153,8 @@ class Order(db.Model):
 class OrderItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
-    candle_id = db.Column(db.Integer, db.ForeignKey('candle.id'), nullable=False)
+    candle_id = db.Column(db.Integer, db.ForeignKey('candle.id'),
+                          nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)
     candle = db.relationship('Candle')
     order = db.relationship('Order', back_populates='items')
