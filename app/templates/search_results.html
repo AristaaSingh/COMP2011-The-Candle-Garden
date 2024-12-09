@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center">Search Results</h2>
+    
+    {% if results %}
+        <p class="text-center mb-4">Found {{ results|length }} result(s) for "{{ query }}".</p>
+        <div class="row">
+            {% for candle in results %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="{{ url_for('static', filename='images/' + candle.image_filename) }}" 
+                         class="card-img-top" 
+                         alt="{{ candle.name }}">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ candle.name }}</h5>
+                        <p class="card-text">£{{ "%.2f" | format(candle.price) }}</p>
+                        <a href="{{ url_for('product', candle_id=candle.id) }}" class="btn btn-primary">View Product</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-muted">No results found for "{{ query }}".</p>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('home') }}" class="btn btn-secondary">Back to Home</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
