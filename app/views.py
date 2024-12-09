@@ -53,6 +53,7 @@ def cookie_policy():
 
 @app.route('/search')
 def search():
+    form = CSRFProtectForm()
     query = request.args.get('query', '').strip()
     if not query:
         flash("Please enter a search term.", "warning")
@@ -62,7 +63,8 @@ def search():
         (Candle.name.ilike(f"%{query}%")) |
         (Candle.description.ilike(f"%{query}%"))
     ).all()
-    return render_template('search_results.html', query=query, results=results)
+    return render_template('search_results.html', query=query,
+    results=results, form=form)
 
 
 # account related routes
