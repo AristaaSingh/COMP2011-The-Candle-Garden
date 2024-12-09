@@ -3,14 +3,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
 
-# Association Table for Many-to-Many Relationship between Candle and Category
+# association Table for Many-to-Many Relationship between Candle and Category
 candle_category = db.Table(
     'candle_category',
     db.Column('candle_id', db.Integer, db.ForeignKey('candle.id'), primary_key=True),
     db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True)
 )
 
-# Association Table for Many-to-Many Relationship between Basket and Candle
+# association Table for Many-to-Many Relationship between Basket and Candle
 basket_candle = db.Table(
     'basket_candle',
     db.Column('basket_id', db.Integer, db.ForeignKey('basket.id'), primary_key=True),

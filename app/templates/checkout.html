@@ -3,8 +3,7 @@
 {% block content %}
 <div class="container py-5">
     <h2 class="text-center mb-4">Delivery Address and Checkout!</h2>
-    
-    <!-- Address Selection Form -->
+    <!-- address selection/ enter manual address functionality -->
     <form action="{{ url_for('checkout') }}" method="POST">
         {% if addresses %}
             <h3>Select a Delivery Address</h3>

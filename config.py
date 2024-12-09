@@ -7,6 +7,6 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 WTF_CSRF_ENABLED = True
 SECRET_KEY = 'a-very-secret-secret'
 
-# File upload configuration
-UPLOAD_FOLDER = os.path.join(basedir, 'static/uploads')  # Directory for uploaded files
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # Allowed image extensions
+# file upload configuration
+UPLOAD_FOLDER = os.path.join(basedir, 'static/uploads')  # directory for uploaded files
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # alowed image extensions

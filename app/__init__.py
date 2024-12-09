@@ -19,10 +19,10 @@ migrate = Migrate(app, db)
 babel = Babel(app, locale_selector=get_locale)
 admin = Admin(app,template_mode='bootstrap4')
 
-# Initialize LoginManager
+# initialize LoginManager
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'  # Route name for the login page
+login_manager.login_view = 'login'
 login_manager.login_message = 'Login or register now to start shopping!'
 login_manager.login_message_category = 'info'
 

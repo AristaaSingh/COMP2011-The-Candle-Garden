@@ -4,10 +4,9 @@
 $(document).ready(function () {
     $(".update-basket").click(function (e) {
         e.preventDefault();
-        // Extract data attributes from the button
         const itemId = $(this).data("item-id");
         const action = $(this).data("action");
-        // Send the AJAX POST request
+        // ajax post request
         $.ajax({
             url: "/update_basket",
             type: "POST",

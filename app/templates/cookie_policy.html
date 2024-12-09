@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center">Cookie Policy</h2>
+    <br>
+    <p>
+        This website uses cookies to enhance your browsing experience. By using this site, you agree to our use of cookies. Below are the details of the cookies used:
+    </p>
+    <br>
+    <ul>
+        <li><strong>Session Cookies:</strong> These cookies help us manage your session while you're logged in.</li>
+        <li><strong>Authentication Cookies:</strong> Used to keep you logged in while you navigate through the website.</li>
+        <br>
+    </ul>
+    <p>
+        If you have any concerns about our cookie usage, please contact us. You can also disable cookies in your browser settings, though this may affect the functionality of our website.
+    <br><br>
+    </p>
+    <div class="text-center">
+        <a href="{{ url_for('home') }}" class="my-btn">Return to Home</a>
+    </div>
+</div>
+{% endblock %}

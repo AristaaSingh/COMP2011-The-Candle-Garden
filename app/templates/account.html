@@ -4,7 +4,6 @@
 <div class="container py-5">
     {% if current_user.is_authenticated %}
     <h2 class="text-center">Welcome, {{ current_user.username }}</h2>
-
     <!-- manage account -->
     <div class="mt-5">
         <h3>Manage Your Account</h3>
@@ -20,7 +19,6 @@
         </div>
     </div>
     <hr>
-
     <!-- addresses -->
     <div class="mt-5">
         <h3>Your Saved Addresses</h3>
@@ -66,7 +64,6 @@
         </form>
     </div>
     <hr>
-
     <!-- order history -->
     <div class="mt-5">
         <h3>Your Order History</h3>
@@ -92,7 +89,6 @@
         <p>No orders yet. Start shopping now!</p>
         {% endif %}
     </div>
-
     <!-- if not logged in -->
     {% else %}
     <h2 class="text-center">Account</h2>

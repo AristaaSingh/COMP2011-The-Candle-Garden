@@ -38,6 +38,10 @@ def product(candle_id):
     category = candle.categories[0]
     return render_template('product.html', candle=candle, category=category, form=form)
 
+@app.route('/cookie-policy')
+def cookie_policy():
+    return render_template('cookie_policy.html')
+
 
 # account related routes
 @app.route('/register', methods=['GET', 'POST'])
@@ -85,8 +89,7 @@ def account():
     """Account management and address handling."""
     form = DeleteAccountForm()
     address_form = AddressForm()
-
-    # Handle new address submission
+    # for new address submission
     if address_form.validate_on_submit():
         address = Address(
             user=current_user,
@@ -101,7 +104,6 @@ def account():
         db.session.commit()
         flash("Address added successfully!", "success")
         return redirect(url_for('account'))
-
     return render_template('account.html', form=form, address_form=address_form)
 
 @app.route('/change_password', methods=['GET', 'POST'])
@@ -157,11 +159,9 @@ def addresses():
 def remove_address(address_id):
     """Remove an address."""
     address = Address.query.get_or_404(address_id)
-
     if address.user_id != current_user.id:
         flash("Unauthorized access!", "danger")
         return redirect(url_for('account'))
-
     db.session.delete(address)
     db.session.commit()
     flash("Address removed successfully.", "success")
@@ -218,7 +218,6 @@ def update_basket():
     data = request.get_json()
     item_id = data.get('item_id')
     action = data.get('action')
-
     item = BasketItem.query.get_or_404(item_id)
     if item.basket.user_id != current_user.id:
         return jsonify({'success': False, 'message': 'Unauthorized access'}), 403
@@ -252,13 +251,11 @@ def update_basket():
 def checkout():
     """Checkout page."""
     address_form = AddressForm()
-
     if request.method == 'POST':
         if not current_user.basket or not current_user.basket.items:
             flash('Your basket is empty.', 'danger')
             return redirect(url_for('basket'))
-
-        # Selected address or new address
+        # selected address or new address
         delivery_address_id = request.form.get('delivery_address_id')
         if delivery_address_id:
             delivery_address = Address.query.get(delivery_address_id)
@@ -277,26 +274,21 @@ def checkout():
         else:
             flash("Please select or add a valid delivery address.", "danger")
             return redirect(url_for('checkout'))
-
-        # Validate stock and place the order
+        # validate stock and place the order
         for item in current_user.basket.items:
             if item.quantity > item.candle.stock:
                 flash(f"Insufficient stock for {item.candle.name}.", "danger")
                 return redirect(url_for('basket'))
-
         total_price = sum(item.candle.price * item.quantity for item in current_user.basket.items)
         order = Order(user=current_user, total_price=total_price, delivery_address=delivery_address)
         db.session.add(order)
-
         for item in current_user.basket.items:
             db.session.add(OrderItem(order=order, candle=item.candle, quantity=item.quantity))
             item.candle.stock -= item.quantity
             db.session.delete(item)
-
         db.session.commit()
         flash("Checkout successful! Your order has been placed.", "success")
         return redirect(url_for('account'))
-
     return render_template(
         'checkout.html', 
         addresses=current_user.addresses, 

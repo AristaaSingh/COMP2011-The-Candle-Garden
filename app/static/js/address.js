@@ -1,3 +1,5 @@
+// this script handles automatic form filling when user wants to select an address from their list of saved addressed during checkout
+
 document.addEventListener("DOMContentLoaded", function () {
     const newAddressFields = document.getElementById("new-address-fields");
     const addressInputs = document.querySelectorAll('input[name="delivery_address_id"]');
@@ -9,16 +11,14 @@ document.addEventListener("DOMContentLoaded", function () {
         postal_code: document.getElementById("postal_code"),
         country: document.getElementById("country"),
     };
-
-    // Function to clear the address form
+    // fnction to clear the address form
     function clearAddressForm() {
         Object.values(addressFormFields).forEach(field => {
             field.value = "";
             field.disabled = false;
         });
     }
-
-    // Function to fill the address form with the selected address
+    // function to fill the adress automatically with the selection
     function fillAddressForm(addressData) {
         Object.keys(addressData).forEach(key => {
             if (addressFormFields[key]) {
@@ -27,8 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-
-    // Add event listeners to the radio buttons
     addressInputs.forEach(input => {
         input.addEventListener("change", function () {
             if (this.checked) {
@@ -41,7 +39,5 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
-
-    // Default to clearing the address form on load
     clearAddressForm();
 });

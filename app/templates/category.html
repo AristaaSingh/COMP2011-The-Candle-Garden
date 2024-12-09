@@ -2,13 +2,11 @@
 
 {% block content %}
 <div class="container py-5">
-
     <!-- intro text -->
     <div class="text-center mb-4">
         <p>Explore all {{ category.name.lower() }} candles!</p>
         <hr>
     </div>
-
     <!-- display card according to category -->
     <div class="row">
         {% for candle in candles %}
@@ -51,4 +49,3 @@
     </div>
 </div>
 {% endblock %}
-
